@@ -39,7 +39,8 @@ public class AdminController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String password, RedirectAttributes redirectAttributes) {
+    public String login(@RequestParam String username, @RequestParam String password, 
+                       jakarta.servlet.http.HttpServletRequest request, RedirectAttributes redirectAttributes) {
         if (adminService.authenticate(username, password)) {
             Authentication auth = new UsernamePasswordAuthenticationToken(
                 username,
@@ -47,9 +48,12 @@ public class AdminController {
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"))
             );
             SecurityContextHolder.getContext().setAuthentication(auth);
+            // セッションに認証情報を保存
+            jakarta.servlet.http.HttpSession session = request.getSession(true);
+            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
             return "redirect:/admin/dashboard";
         } else {
-            redirectAttributes.addFlashAttribute("error", "ログインに失敗しました");
+            redirectAttributes.addFlashAttribute("error", "ログインに失敗しました。IDとパスワードを確認してください。");
             return "redirect:/admin/login";
         }
     }

@@ -20,6 +20,7 @@
                         </div>
                         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
                         <form th:action="@{/admin/login}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <div class="mb-3">
                                 <label for="adminId" class="form-label">管理者ID</label>
                                 <input type="text" class="form-control" id="adminId" name="username" autocomplete="username" required>

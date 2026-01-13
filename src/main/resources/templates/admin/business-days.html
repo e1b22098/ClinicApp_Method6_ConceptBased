@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>営業日設定 - 診療予約管理システム</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="/admin/dashboard">診療予約管理システム（管理者）</a>
+            <div class="navbar-nav ms-auto">
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-outline-light">ログアウト</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h4>営業日一覧</h4>
+            </div>
+            <div class="card-body">
+                <a href="/admin/business-days/create" class="btn btn-primary mb-3">新規営業日登録</a>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>営業日</th>
+                            <th>時間枠</th>
+                            <th>予約受付状況</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(businessDays)}">
+                            <td colspan="4" class="text-center">営業日が登録されていません</td>
+                        </tr>
+                        <tr th:each="day : ${businessDays}">
+                            <td th:text="${#temporals.format(day.businessDate, 'yyyy年MM月dd日')}"></td>
+                            <td th:text="${day.timeSlots}"></td>
+                            <td>
+                                <span class="badge bg-success" th:if="${day.isAccepting}">受付中</span>
+                                <span class="badge bg-danger" th:if="${!day.isAccepting}">停止中</span>
+                            </td>
+                            <td>
+                                <form th:action="@{/admin/business-days/{id}/toggle-accepting(id=${day.businessDayId})}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-warning">
+                                        <span th:if="${day.isAccepting}">受付停止</span>
+                                        <span th:if="${!day.isAccepting}">受付再開</span>
+                                    </button>
+                                </form>
+                                <form th:action="@{/admin/business-days/{id}/delete(id=${day.businessDayId})}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('削除してもよろしいですか？')">削除</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <a href="/admin/dashboard" class="btn btn-secondary">ダッシュボードに戻る</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

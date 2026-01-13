@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.clinic.booking.mapper.AdminMapper">
+
+    <resultMap id="adminResultMap" type="com.clinic.booking.model.Admin">
+        <id property="adminId" column="admin_id"/>
+        <result property="adminIdString" column="admin_id_string"/>
+        <result property="password" column="password"/>
+    </resultMap>
+
+    <select id="findByAdminIdString" resultMap="adminResultMap">
+        SELECT admin_id, admin_id_string, password
+        FROM admins
+        WHERE admin_id_string = #{adminIdString}
+    </select>
+
+</mapper>

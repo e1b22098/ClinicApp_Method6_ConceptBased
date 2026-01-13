@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.clinic.booking.mapper.BusinessDayMapper">
+
+    <resultMap id="businessDayResultMap" type="com.clinic.booking.model.BusinessDay">
+        <id property="businessDayId" column="business_day_id"/>
+        <result property="businessDate" column="business_date"/>
+        <result property="isAccepting" column="is_accepting"/>
+        <result property="timeSlots" column="time_slots"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="businessDayResultMap">
+        SELECT business_day_id, business_date, is_accepting, time_slots
+        FROM business_days
+        ORDER BY business_date ASC
+    </select>
+
+    <select id="findAcceptingDays" resultMap="businessDayResultMap">
+        SELECT business_day_id, business_date, is_accepting, time_slots
+        FROM business_days
+        WHERE is_accepting = TRUE
+        AND business_date >= CURDATE()
+        ORDER BY business_date ASC
+    </select>
+
+    <select id="findByDate" resultMap="businessDayResultMap">
+        SELECT business_day_id, business_date, is_accepting, time_slots
+        FROM business_days
+        WHERE business_date = #{businessDate}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="businessDayId">
+        INSERT INTO business_days (business_date, is_accepting, time_slots)
+        VALUES (#{businessDate}, #{isAccepting}, #{timeSlots})
+    </insert>
+
+    <update id="update">
+        UPDATE business_days
+        SET business_date = #{businessDate},
+            is_accepting = #{isAccepting},
+            time_slots = #{timeSlots}
+        WHERE business_day_id = #{businessDayId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM business_days
+        WHERE business_day_id = #{businessDayId}
+    </delete>
+
+    <update id="updateAcceptingStatus">
+        UPDATE business_days
+        SET is_accepting = #{isAccepting}
+        WHERE business_day_id = #{businessDayId}
+    </update>
+
+</mapper>

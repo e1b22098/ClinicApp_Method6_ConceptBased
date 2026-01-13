@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>予約状況一覧 - 診療予約管理システム</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="/admin/dashboard">診療予約管理システム（管理者）</a>
+            <div class="navbar-nav ms-auto">
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-outline-light">ログアウト</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4>予約状況一覧</h4>
+            </div>
+            <div class="card-body">
+                <form method="get" action="/admin/bookings" class="mb-3">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="date" name="date" class="form-control" th:value="${selectedDate}">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary">検索</button>
+                        </div>
+                    </div>
+                </form>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>予約ID</th>
+                            <th>患者名</th>
+                            <th>電話番号</th>
+                            <th>予約日</th>
+                            <th>予約時間</th>
+                            <th>ステータス</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(bookings)}">
+                            <td colspan="6" class="text-center">予約がありません</td>
+                        </tr>
+                        <tr th:each="booking : ${bookings}">
+                            <td th:text="${booking.bookingId}"></td>
+                            <td th:text="${booking.patient?.name}"></td>
+                            <td th:text="${booking.patient?.phoneNumber}"></td>
+                            <td th:text="${#temporals.format(booking.bookingDate, 'yyyy年MM月dd日')}"></td>
+                            <td th:text="${#temporals.format(booking.bookingTime, 'HH:mm')}"></td>
+                            <td>
+                                <span class="badge bg-success" th:if="${booking.status == 'ACTIVE'}">有効</span>
+                                <span class="badge bg-secondary" th:if="${booking.status == 'CANCELLED'}">キャンセル済み</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <a href="/admin/dashboard" class="btn btn-secondary">ダッシュボードに戻る</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

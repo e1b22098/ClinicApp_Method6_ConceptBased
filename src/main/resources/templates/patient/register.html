@@ -15,23 +15,26 @@
                         <h4>新規患者登録</h4>
                     </div>
                     <div class="card-body">
+                        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+                        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
                         <form th:action="@{/patient/register}" th:object="${patient}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <div class="mb-3">
                                 <label for="name" class="form-label">氏名 <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                                <input type="text" class="form-control" id="name" th:field="*{name}" autocomplete="name" required>
                             </div>
                             <div class="mb-3">
                                 <label for="birthDate" class="form-label">生年月日 <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" id="birthDate" th:field="*{birthDate}" required>
+                                <input type="date" class="form-control" id="birthDate" th:field="*{birthDate}" autocomplete="bday" required>
                             </div>
                             <div class="mb-3">
                                 <label for="phoneNumber" class="form-label">電話番号 <span class="text-danger">*</span></label>
-                                <input type="tel" class="form-control" id="phoneNumber" th:field="*{phoneNumber}" required>
+                                <input type="tel" class="form-control" id="phoneNumber" th:field="*{phoneNumber}" autocomplete="tel" required>
                                 <div th:if="${#fields.hasErrors('phoneNumber')}" class="text-danger" th:errors="*{phoneNumber}"></div>
                             </div>
                             <div class="mb-3">
                                 <label for="password" class="form-label">パスワード <span class="text-danger">*</span></label>
-                                <input type="password" class="form-control" id="password" th:field="*{password}" required>
+                                <input type="password" class="form-control" id="password" th:field="*{password}" autocomplete="new-password" required>
                             </div>
                             <button type="submit" class="btn btn-primary w-100">登録</button>
                         </form>

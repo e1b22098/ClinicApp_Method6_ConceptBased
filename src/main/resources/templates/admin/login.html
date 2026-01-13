@@ -22,11 +22,11 @@
                         <form th:action="@{/admin/login}" method="post">
                             <div class="mb-3">
                                 <label for="adminId" class="form-label">管理者ID</label>
-                                <input type="text" class="form-control" id="adminId" name="username" required>
+                                <input type="text" class="form-control" id="adminId" name="username" autocomplete="username" required>
                             </div>
                             <div class="mb-3">
                                 <label for="password" class="form-label">パスワード</label>
-                                <input type="password" class="form-control" id="password" name="password" required>
+                                <input type="password" class="form-control" id="password" name="password" autocomplete="current-password" required>
                             </div>
                             <button type="submit" class="btn btn-success w-100">ログイン</button>
                         </form>

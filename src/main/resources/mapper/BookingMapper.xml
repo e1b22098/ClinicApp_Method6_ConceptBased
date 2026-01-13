@@ -9,7 +9,6 @@
         <result property="bookingDate" column="booking_date"/>
         <result property="bookingTime" column="booking_time"/>
         <result property="status" column="status"/>
-        <result property="createdAt" column="created_at"/>
         <association property="patient" javaType="com.clinic.booking.model.Patient">
             <id property="patientId" column="p_patient_id"/>
             <result property="name" column="p_name"/>
@@ -23,26 +22,28 @@
     </insert>
 
     <select id="findById" resultMap="bookingResultMap">
-        SELECT b.booking_id, b.patient_id, b.booking_date, b.booking_time, b.status, b.created_at,
-               p.patient_id as p_patient_id, p.name as p_name, p.phone_number as p_phone_number
+        SELECT b.booking_id, b.patient_id, b.booking_date, b.booking_time, b.status,
+               p.patient_id as p_patient_id, p.name as p_name, p.phone as p_phone_number
         FROM bookings b
         LEFT JOIN patients p ON b.patient_id = p.patient_id
         WHERE b.booking_id = #{bookingId}
     </select>
 
-    <select id="findByPatientId" resultMap="bookingResultMap">
-        SELECT b.booking_id, b.patient_id, b.booking_date, b.booking_time, b.status, b.created_at,
-               p.patient_id as p_patient_id, p.name as p_name, p.phone_number as p_phone_number
-        FROM bookings b
-        LEFT JOIN patients p ON b.patient_id = p.patient_id
-        WHERE b.patient_id = #{patientId}
-        AND b.status = 'ACTIVE'
-        ORDER BY b.booking_date ASC, b.booking_time ASC
+    <select id="findByPatientId" resultType="com.clinic.booking.model.Booking">
+        SELECT booking_id as bookingId, 
+               patient_id as patientId, 
+               booking_date as bookingDate, 
+               booking_time as bookingTime, 
+               status
+        FROM bookings
+        WHERE patient_id = #{patientId}
+        AND status = 'ACTIVE'
+        ORDER BY booking_date ASC, booking_time ASC
     </select>
 
     <select id="findByDate" resultMap="bookingResultMap">
-        SELECT b.booking_id, b.patient_id, b.booking_date, b.booking_time, b.status, b.created_at,
-               p.patient_id as p_patient_id, p.name as p_name, p.phone_number as p_phone_number
+        SELECT b.booking_id, b.patient_id, b.booking_date, b.booking_time, b.status,
+               p.patient_id as p_patient_id, p.name as p_name, p.phone as p_phone_number
         FROM bookings b
         LEFT JOIN patients p ON b.patient_id = p.patient_id
         WHERE b.booking_date = #{bookingDate}
@@ -51,8 +52,8 @@
     </select>
 
     <select id="findByDateAndTime" resultMap="bookingResultMap">
-        SELECT b.booking_id, b.patient_id, b.booking_date, b.booking_time, b.status, b.created_at,
-               p.patient_id as p_patient_id, p.name as p_name, p.phone_number as p_phone_number
+        SELECT b.booking_id, b.patient_id, b.booking_date, b.booking_time, b.status,
+               p.patient_id as p_patient_id, p.name as p_name, p.phone as p_phone_number
         FROM bookings b
         LEFT JOIN patients p ON b.patient_id = p.patient_id
         WHERE b.booking_date = #{bookingDate}

@@ -5,36 +5,60 @@
 
     <resultMap id="patientResultMap" type="com.clinic.booking.model.Patient">
         <id property="patientId" column="patient_id"/>
+        <result property="patientNumber" column="patient_number"/>
         <result property="name" column="name"/>
         <result property="birthDate" column="birth_date"/>
-        <result property="phoneNumber" column="phone_number"/>
+        <result property="phoneNumber" column="phone"/>
         <result property="password" column="password"/>
         <result property="resetToken" column="reset_token"/>
         <result property="resetTokenExpiry" column="reset_token_expiry"/>
     </resultMap>
+    
+    <resultMap id="patientResultMapWithoutReset" type="com.clinic.booking.model.Patient">
+        <id property="patientId" column="patient_id"/>
+        <result property="patientNumber" column="patient_number"/>
+        <result property="name" column="name"/>
+        <result property="birthDate" column="birth_date"/>
+        <result property="phoneNumber" column="phone"/>
+        <result property="password" column="password"/>
+    </resultMap>
 
-    <select id="findByPatientId" resultMap="patientResultMap">
-        SELECT patient_id, name, birth_date, phone_number, password, reset_token, reset_token_expiry
+    <select id="findByPatientId" resultMap="patientResultMapWithoutReset">
+        SELECT patient_id, patient_number, name, birth_date, phone, password
         FROM patients
         WHERE patient_id = #{patientId}
     </select>
 
-    <select id="findByPhoneNumber" resultMap="patientResultMap">
-        SELECT patient_id, name, birth_date, phone_number, password, reset_token, reset_token_expiry
+    <select id="findByPatientNumber" resultMap="patientResultMapWithoutReset">
+        SELECT patient_id, patient_number, name, birth_date, phone, password
         FROM patients
-        WHERE phone_number = #{phoneNumber}
+        WHERE TRIM(patient_number) = TRIM(#{patientNumber})
+    </select>
+
+    <select id="findByPhoneNumber" resultMap="patientResultMapWithoutReset">
+        SELECT patient_id, patient_number, name, birth_date, phone, password
+        FROM patients
+        WHERE phone = #{phoneNumber}
+    </select>
+
+    <select id="findMaxPatientNumber" resultType="String">
+        SELECT patient_number 
+        FROM patients 
+        WHERE patient_number IS NOT NULL 
+        ORDER BY CAST(patient_number AS UNSIGNED) DESC 
+        LIMIT 1
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="patientId">
-        INSERT INTO patients (name, birth_date, phone_number, password)
-        VALUES (#{name}, #{birthDate}, #{phoneNumber}, #{password})
+        INSERT INTO patients (patient_number, card_number, name, birth_date, phone, password)
+        VALUES (#{patientNumber}, #{patientNumber}, #{name}, #{birthDate}, #{phoneNumber}, #{password})
     </insert>
 
     <update id="update">
         UPDATE patients
         SET name = #{name},
             birth_date = #{birthDate},
-            phone_number = #{phoneNumber}
+            phone = #{phoneNumber}
         WHERE patient_id = #{patientId}
     </update>
 
@@ -45,10 +69,16 @@
     </update>
 
     <select id="findByResetToken" resultMap="patientResultMap">
-        SELECT patient_id, name, birth_date, phone_number, password, reset_token, reset_token_expiry
+        SELECT patient_id, patient_number, name, birth_date, phone, password, reset_token, reset_token_expiry
         FROM patients
         WHERE reset_token = #{resetToken}
         AND reset_token_expiry >= CURDATE()
+    </select>
+
+    <select id="findAll" resultMap="patientResultMapWithoutReset">
+        SELECT patient_id, patient_number, name, birth_date, phone, password
+        FROM patients
+        ORDER BY patient_id
     </select>
 
 </mapper>

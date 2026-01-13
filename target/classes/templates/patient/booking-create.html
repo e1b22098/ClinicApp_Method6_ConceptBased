@@ -28,7 +28,8 @@
                         <select class="form-select" id="bookingDate" name="bookingDate" required>
                             <option value="">選択してください</option>
                             <option th:each="day : ${businessDays}" 
-                                    th:value="${day.businessDate}" 
+                                    th:value="${#temporals.format(day.businessDate, 'yyyy-MM-dd')}" 
+                                    th:data-time-slots="${day.timeSlots}"
                                     th:text="${#temporals.format(day.businessDate, 'yyyy年MM月dd日')}"></option>
                         </select>
                     </div>
@@ -51,21 +52,24 @@
         const dateSelect = document.getElementById('bookingDate');
         const timeSelect = document.getElementById('bookingTime');
 
+        // デバッグ用: businessDaysの内容を確認
+        console.log('businessDays:', businessDays);
+
         dateSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
             const selectedDate = this.value;
+            const timeSlotsData = selectedOption.getAttribute('data-time-slots');
+            
             timeSelect.innerHTML = '<option value="">選択してください</option>';
             
-            if (selectedDate) {
-                const selectedDay = businessDays.find(day => day.businessDate === selectedDate);
-                if (selectedDay && selectedDay.timeSlots) {
-                    const slots = selectedDay.timeSlots.split(',');
-                    slots.forEach(slot => {
-                        const option = document.createElement('option');
-                        option.value = slot.trim();
-                        option.textContent = slot.trim();
-                        timeSelect.appendChild(option);
-                    });
-                }
+            if (selectedDate && timeSlotsData) {
+                const slots = timeSlotsData.split(',').map(s => s.trim()).filter(s => s);
+                slots.forEach(slot => {
+                    const option = document.createElement('option');
+                    option.value = slot;
+                    option.textContent = slot;
+                    timeSelect.appendChild(option);
+                });
             }
         });
     </script>

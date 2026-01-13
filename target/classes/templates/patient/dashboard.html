@@ -13,6 +13,7 @@
             <div class="navbar-nav ms-auto">
                 <span class="navbar-text text-white me-3" th:text="'ようこそ、' + ${patient.name} + 'さん'"></span>
                 <form th:action="@{/logout}" method="post" class="d-inline">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <button type="submit" class="btn btn-outline-light">ログアウト</button>
                 </form>
             </div>
@@ -54,6 +55,7 @@
                                     <td>
                                         <a th:href="@{/patient/booking/{id}(id=${booking.bookingId})}" class="btn btn-sm btn-info">詳細</a>
                                         <form th:action="@{/patient/booking/{id}/cancel(id=${booking.bookingId})}" method="post" class="d-inline">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                             <button type="submit" class="btn btn-sm btn-danger" 
                                                     th:disabled="${booking.status == 'CANCELLED'}">キャンセル</button>
                                         </form>

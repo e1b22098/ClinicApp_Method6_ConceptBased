@@ -1,0 +1,3 @@
+com\clinic\booking\config\PasswordEncoderConfig.class
+com\clinic\booking\ClinicBookingApplication.class
+com\clinic\booking\config\SecurityConfig.class

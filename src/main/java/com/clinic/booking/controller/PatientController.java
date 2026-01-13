@@ -54,9 +54,20 @@ public class PatientController {
             return "patient/register";
         }
 
-        patientService.register(patient);
-        redirectAttributes.addFlashAttribute("message", "登録が完了しました。ログインしてください。");
-        return "redirect:/patient/login";
+        try {
+            Patient registeredPatient = patientService.register(patient);
+            String patientNumber = registeredPatient.getPatientNumber();
+            if (patientNumber == null || patientNumber.trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "診察券番号の生成に失敗しました。管理者にお問い合わせください。");
+                return "redirect:/patient/register";
+            }
+            redirectAttributes.addFlashAttribute("message", 
+                "登録が完了しました。診察券番号: " + patientNumber + " でログインしてください。");
+            return "redirect:/patient/login";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "登録中にエラーが発生しました: " + e.getMessage());
+            return "redirect:/patient/register";
+        }
     }
 
     @GetMapping("/reset-password")
@@ -65,9 +76,9 @@ public class PatientController {
     }
 
     @PostMapping("/reset-password")
-    public String requestResetPassword(@RequestParam String phoneNumber, RedirectAttributes redirectAttributes) {
+    public String requestResetPassword(@RequestParam String patientNumber, RedirectAttributes redirectAttributes) {
         try {
-            String token = patientService.generateResetToken(phoneNumber);
+            String token = patientService.generateResetToken(patientNumber);
             redirectAttributes.addFlashAttribute("message", "パスワードリセット用のリンクを送信しました。");
             redirectAttributes.addFlashAttribute("resetToken", token);
             return "redirect:/patient/reset-password/" + token;
@@ -97,8 +108,8 @@ public class PatientController {
 
     @GetMapping("/dashboard")
     public String dashboard(Authentication authentication, Model model) {
-        String phoneNumber = authentication.getName();
-        Patient patient = patientService.findByPhoneNumber(phoneNumber)
+        String patientNumber = authentication.getName();
+        Patient patient = patientService.findByPatientNumber(patientNumber)
             .orElseThrow(() -> new RuntimeException("患者が見つかりません"));
         
         List<Booking> bookings = bookingService.getBookingsByPatient(patient.getPatientId());
@@ -120,8 +131,8 @@ public class PatientController {
                                @RequestParam LocalDate bookingDate,
                                @RequestParam LocalTime bookingTime,
                                RedirectAttributes redirectAttributes) {
-        String phoneNumber = authentication.getName();
-        Patient patient = patientService.findByPhoneNumber(phoneNumber)
+        String patientNumber = authentication.getName();
+        Patient patient = patientService.findByPatientNumber(patientNumber)
             .orElseThrow(() -> new RuntimeException("患者が見つかりません"));
 
         Booking booking = new Booking();
@@ -141,8 +152,8 @@ public class PatientController {
 
     @GetMapping("/booking/{bookingId}")
     public String viewBooking(@PathVariable Integer bookingId, Authentication authentication, Model model) {
-        String phoneNumber = authentication.getName();
-        Patient patient = patientService.findByPhoneNumber(phoneNumber)
+        String patientNumber = authentication.getName();
+        Patient patient = patientService.findByPatientNumber(patientNumber)
             .orElseThrow(() -> new RuntimeException("患者が見つかりません"));
 
         Booking booking = bookingService.getBooking(bookingId)
@@ -158,8 +169,8 @@ public class PatientController {
 
     @PostMapping("/booking/{bookingId}/cancel")
     public String cancelBooking(@PathVariable Integer bookingId, Authentication authentication, RedirectAttributes redirectAttributes) {
-        String phoneNumber = authentication.getName();
-        Patient patient = patientService.findByPhoneNumber(phoneNumber)
+        String patientNumber = authentication.getName();
+        Patient patient = patientService.findByPatientNumber(patientNumber)
             .orElseThrow(() -> new RuntimeException("患者が見つかりません"));
 
         try {

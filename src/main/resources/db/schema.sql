@@ -6,6 +6,7 @@ USE clinic_booking_db;
 -- 患者テーブル
 CREATE TABLE IF NOT EXISTS patients (
     patient_id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_number VARCHAR(20) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL,
     birth_date DATE NOT NULL,
     phone_number VARCHAR(20) NOT NULL,
@@ -13,7 +14,8 @@ CREATE TABLE IF NOT EXISTS patients (
     reset_token VARCHAR(255) NULL,
     reset_token_expiry DATE NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY uk_phone (phone_number)
+    UNIQUE KEY uk_phone (phone_number),
+    UNIQUE KEY uk_patient_number (patient_number)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 管理者テーブル

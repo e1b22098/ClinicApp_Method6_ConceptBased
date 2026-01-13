@@ -7,6 +7,7 @@ import java.time.LocalDate;
  */
 public class Patient {
     private Integer patientId;
+    private String patientNumber; // 診察券番号
     private String name;
     private LocalDate birthDate;
     private String phoneNumber;
@@ -21,6 +22,14 @@ public class Patient {
 
     public void setPatientId(Integer patientId) {
         this.patientId = patientId;
+    }
+
+    public String getPatientNumber() {
+        return patientNumber;
+    }
+
+    public void setPatientNumber(String patientNumber) {
+        this.patientNumber = patientNumber;
     }
 
     public String getName() {
